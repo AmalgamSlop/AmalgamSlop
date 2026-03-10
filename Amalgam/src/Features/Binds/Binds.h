@@ -1,14 +1,14 @@
 #pragma once
 #include "../../SDK/SDK.h"
 
-Enum(Bind, Key, Class, WeaponType, ItemSlot, Misc)
+Enum(Bind, Key, Class, WeaponType, ItemSlot, Misc, ClassAndKey, UnderHP, PlayerCount, ExactWeapon, Charging, IfOptionOn, Ticks, GameMode)
 namespace BindEnum
 {
 	Enum(Key, Hold, Toggle, DoubleClick)
 	Enum(Class, Scout, Soldier, Pyro, Demoman, Heavy, Engineer, Medic, Sniper, Spy)
 	Enum(WeaponType, Hitscan, Projectile, Melee, Throwable)
-	//Enum(ItemType, First, Second, Third, Fourth, Fifth, Sixth, Seventh, Eighth, Ninth)
 	Enum(Misc, Spectated, SpectatedFirst, SpectatedThird, Zoomed, Aiming)
+	Enum(GameMode, Casual, Private)
 }
 Enum(BindVisibility, Always, WhileActive, Hidden)
 
@@ -28,6 +28,13 @@ struct Bind_t
 	int m_iParent = DEFAULT_BIND;
 
 	std::vector<BaseVar*> m_vVars = {};
+
+	// Extra data for configurable bind types
+	int m_iExtraInt = 0;       // used by UnderHP (hp threshold), PlayerCount (count), Ticks (tick count)
+	int m_iExtraInt2 = 0;      // used by ClassAndKey (class enum)
+	int m_iExtraKey = 0;       // used by ClassAndKey (second key)
+	int m_iExtraWeaponID = 0;  // used by ExactWeapon (item def index)
+	std::string m_sOptionName = ""; // used by IfOptionOn (var name)
 };
 
 class CBinds
@@ -49,5 +56,7 @@ public:
 	std::vector<Bind_t> m_vBinds = {};
 	bool m_bDisplay = false;
 };
+
+ADD_FEATURE(CBinds, Binds);
 
 ADD_FEATURE(CBinds, Binds);
