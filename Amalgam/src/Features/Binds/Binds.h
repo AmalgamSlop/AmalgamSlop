@@ -58,5 +58,3 @@ public:
 };
 
 ADD_FEATURE(CBinds, Binds);
-
-ADD_FEATURE(CBinds, Binds);
