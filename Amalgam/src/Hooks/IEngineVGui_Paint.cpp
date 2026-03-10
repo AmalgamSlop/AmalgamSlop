@@ -22,9 +22,6 @@ MAKE_HOOK(IEngineVGui_Paint, U::Memory.GetVirtual(I::EngineVGui, 14), void,
 	if (G::Unload)
 		return CALL_ORIGINAL(rcx, iMode);
 
-	// Update rainbow time for animated color pickers
-	Color_t::UpdateRainbowTime(I::GlobalVars ? I::GlobalVars->curtime : 0.f);
-
 	if (iMode & PAINT_INGAMEPANELS && !SDK::CleanScreenshot())
 	{
 		H::Draw.UpdateScreenSize();

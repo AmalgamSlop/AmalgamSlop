@@ -34,13 +34,6 @@ template <> void CConfigs::SaveJson(boost::property_tree::ptree& t, const std::s
 	SaveJson(tChild, "g", v.g);
 	SaveJson(tChild, "b", v.b);
 	SaveJson(tChild, "a", v.a);
-	if (v.m_bRainbow)
-	{
-		SaveJson(tChild, "rainbow", v.m_bRainbow);
-		SaveJson(tChild, "rainbow_speed", v.m_flRainbowSpeed);
-		SaveJson(tChild, "rainbow_sat", v.m_flRainbowSaturation);
-		SaveJson(tChild, "rainbow_val", v.m_flRainbowBrightness);
-	}
 
 	t.put_child(s, tChild);
 }
@@ -141,10 +134,6 @@ template <> void CConfigs::LoadJson(const boost::property_tree::ptree& t, const 
 		LoadJson(*tChild, "g", v.g);
 		LoadJson(*tChild, "b", v.b);
 		LoadJson(*tChild, "a", v.a);
-		LoadJson(*tChild, "rainbow", v.m_bRainbow);
-		LoadJson(*tChild, "rainbow_speed", v.m_flRainbowSpeed);
-		LoadJson(*tChild, "rainbow_sat", v.m_flRainbowSaturation);
-		LoadJson(*tChild, "rainbow_val", v.m_flRainbowBrightness);
 	}
 }
 
@@ -429,11 +418,6 @@ bool CConfigs::SaveConfig(const std::string& sConfigName, bool bNotify)
 				SaveJson(tChild, "Not", tBind.m_bNot);
 				SaveJson(tChild, "Active", tBind.m_bActive);
 				SaveJson(tChild, "Parent", tBind.m_iParent);
-				SaveJson(tChild, "ExtraInt", tBind.m_iExtraInt);
-				SaveJson(tChild, "ExtraInt2", tBind.m_iExtraInt2);
-				SaveJson(tChild, "ExtraKey", tBind.m_iExtraKey);
-				SaveJson(tChild, "ExtraWeaponID", tBind.m_iExtraWeaponID);
-				SaveJson(tChild, "OptionName", tBind.m_sOptionName);
 
 				tSub.put_child(std::to_string(iID), tChild);
 			}
@@ -548,11 +532,6 @@ bool CConfigs::LoadConfig(const std::string& sConfigName, bool bNotify)
 				LoadJson(tChild, "Not", tBind.m_bNot);
 				LoadJson(tChild, "Active", tBind.m_bActive);
 				LoadJson(tChild, "Parent", tBind.m_iParent);
-				LoadJson(tChild, "ExtraInt", tBind.m_iExtraInt);
-				LoadJson(tChild, "ExtraInt2", tBind.m_iExtraInt2);
-				LoadJson(tChild, "ExtraKey", tBind.m_iExtraKey);
-				LoadJson(tChild, "ExtraWeaponID", tBind.m_iExtraWeaponID);
-				LoadJson(tChild, "OptionName", tBind.m_sOptionName);
 				if (F::Binds.m_vBinds.size() == tBind.m_iParent)
 					tBind.m_iParent = DEFAULT_BIND - 1; // prevent infinite loop
 

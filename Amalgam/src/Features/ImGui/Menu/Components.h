@@ -1335,9 +1335,8 @@ namespace ImGui
 				{
 					bool bVar1 = mActiveMap[uHash] == 1;
 					float& flVar = bVar1 ? flSVar1 : flSVar2;
-					float flEffectiveStep = (GetIO().KeyShift) ? std::max(flStep, 1.f) : std::max(flStep * 0.1f, 0.001f);
 					flVar = flMin + (flMax - flMin) * flMousePerc;
-					flVar = std::clamp(flVar - fnmodf(flVar, flEffectiveStep), !bVar1 ? flSVar1 + flEffectiveStep : flMin, bVar1 ? flSVar2 - flEffectiveStep : flMax);
+					flVar = std::clamp(flVar - fnmodf(flVar, flStep), !bVar1 ? flSVar1 + flStep : flMin, bVar1 ? flSVar2 - flStep : flMax);
 					pDrawList->AddCircleFilled({ vDrawPos.x + (bVar1 ? flLowerPos : flUpperPos), vDrawPos.y + vMins.y + H::Draw.Scale(1) }, H::Draw.Scale(16), tTransparent);
 				}
 				else
@@ -1369,10 +1368,8 @@ namespace ImGui
 				}
 				else if (mActiveMap[uHash] && IsMouseDown(ImGuiMouseButton_Left))
 				{
-					// Shift held = 1.0 step intervals; default = 0.1 intervals
-					float flEffectiveStep = (GetIO().KeyShift) ? std::max(flStep, 1.f) : std::max(flStep * 0.1f, 0.001f);
 					flSVar1 = flMin + (flMax - flMin) * flMousePerc;
-					flSVar1 = std::clamp(flSVar1 - fnmodf(flSVar1, flEffectiveStep), flMin, flMax);
+					flSVar1 = std::clamp(flSVar1 - fnmodf(flSVar1, flStep), flMin, flMax);
 					pDrawList->AddCircleFilled({ vDrawPos.x + flPos, vDrawPos.y + vMins.y + H::Draw.Scale(1) }, H::Draw.Scale(16), tTransparent);
 				}
 				else
@@ -1893,81 +1890,15 @@ namespace ImGui
 		PushStyleVar(ImGuiStyleVar_PopupBorderSize, H::Draw.Scale());
 		PushStyleColor(ImGuiCol_PopupBg, F::Render.Background0p5.Value);
 
-		// Show rainbow color preview if rainbow mode is on
-		ImVec4 tTempColor;
-		if (pColor->m_bRainbow)
-		{
-			Color_t tRainbow = pColor->GetRainbow(Color_t::GetRainbowTime());
-			tTempColor = ColorToVec(tRainbow);
-		}
-		else
-			tTempColor = ColorToVec(*pColor);
-
+		ImVec4 tTempColor = ColorToVec(*pColor);
 		bool bReturn = ColorEdit4(std::format("##{}", sLabel).c_str(), &tTempColor.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoBorder | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_LargeAlphaGrid | ImGuiColorEditFlags_NoRoundRestrict, vSize);
-		if (bReturn && !pColor->m_bRainbow)
-		{
-			bool bRainbow = pColor->m_bRainbow;
-			float flSpeed = pColor->m_flRainbowSpeed;
-			float flSat = pColor->m_flRainbowSaturation;
-			float flVal = pColor->m_flRainbowBrightness;
+		if (bReturn)
 			*pColor = VecToColor(tTempColor);
-			pColor->m_bRainbow = bRainbow;
-			pColor->m_flRainbowSpeed = flSpeed;
-			pColor->m_flRainbowSaturation = flSat;
-			pColor->m_flRainbowBrightness = flVal;
-		}
-
-		// Rainbow options inside the color picker popup
-		if (BeginPopup(std::format("##colorpicker{}", sLabel).c_str()))
-		{
-			// This popup is managed by ImGui's ColorEdit4; we inject rainbow controls after
-		}
-		// Detect if the ColorEdit popup is open and inject rainbow toggle
-		std::string sPopupId = std::format("##colorpicker{}", sLabel);
-		if (IsPopupOpen(std::format("##cp{}", sLabel).c_str()))
-		{
-		}
-
 		if (!Disabled && IsItemHovered())
 			SetMouseCursor(ImGuiMouseCursor_Hand);
 
 		PopStyleColor();
 		PopStyleVar(5);
-
-		// Rainbow controls shown after the color swatch via tooltip area
-		if (IsItemHovered() && IsMouseReleased(ImGuiMouseButton_Right) && !IsMouseDown(ImGuiMouseButton_Left))
-		{
-			OpenPopup(std::format("##rainbow_cfg_{}", sLabel).c_str());
-		}
-		if (BeginPopup(std::format("##rainbow_cfg_{}", sLabel).c_str()))
-		{
-			PushStyleVar(ImGuiStyleVar_WindowPadding, { H::Draw.Scale(8), H::Draw.Scale(8) });
-			Text("Rainbow");
-			SameLine();
-			bool bRainbow = pColor->m_bRainbow;
-			if (Checkbox("##rainbowEnabled", &bRainbow))
-				pColor->m_bRainbow = bRainbow;
-			if (pColor->m_bRainbow)
-			{
-				Text("Speed");
-				float flSpeed = pColor->m_flRainbowSpeed;
-				SetNextItemWidth(H::Draw.Scale(120));
-				if (DragFloat("##rainbowSpeed", &flSpeed, 0.1f, 0.1f, 20.f, "%.1f"))
-					pColor->m_flRainbowSpeed = flSpeed;
-				Text("Saturation");
-				float flSat = pColor->m_flRainbowSaturation;
-				SetNextItemWidth(H::Draw.Scale(120));
-				if (DragFloat("##rainbowSat", &flSat, 1.f, 0.f, 100.f, "%.0f%%"))
-					pColor->m_flRainbowSaturation = flSat;
-				Text("Brightness");
-				float flVal = pColor->m_flRainbowBrightness;
-				SetNextItemWidth(H::Draw.Scale(120));
-				if (DragFloat("##rainbowVal", &flVal, 1.f, 0.f, 100.f, "%.0f%%"))
-					pColor->m_flRainbowBrightness = flVal;
-			}
-			PopStyleVar();
-			EndPopup();
-		}
 
 		if (bTooltip)
 		{

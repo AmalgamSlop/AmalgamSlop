@@ -37,7 +37,6 @@ public:
 	void PingReducer();
 	void UnlockAchievements();
 	void LockAchievements();
-	void UnlockItemAchievements();
 
 	int m_iWishCmdrate = -1;
 	int m_iWishUpdaterate = -1;

@@ -2557,7 +2557,7 @@ void CMenu::MenuSettings(int iTab)
 					if (FButton(std::format("Parent: {}", sParent).c_str(), FButtonEnum::Right | FButtonEnum::SameLine | FButtonEnum::NoUpper, { 0, 40 }))
 						bParent = 2;
 				}
-				FDropdown("Type", &tBind.m_iType, { "Key", "Class", "Weapon type", "Item slot", "Misc", "Class + Key", "Under HP", "Player count", "Exact weapon", "Charging", "If option on", "Ticks", "Game mode" }, {}, FDropdownEnum::Left);
+				FDropdown("Type", &tBind.m_iType, { "Key", "Class", "Weapon type", "Item slot", "Misc" }, {}, FDropdownEnum::Left);
 				switch (tBind.m_iType)
 				{
 				case BindEnum::Key: FDropdown("Behavior", &tBind.m_iInfo, { "Hold", "Toggle", "Double click" }, {}, FDropdownEnum::Right); break;
@@ -2565,48 +2565,6 @@ void CMenu::MenuSettings(int iTab)
 				case BindEnum::WeaponType: FDropdown("Weapon type", &tBind.m_iInfo, { "Hitscan", "Projectile", "Melee", "Throwable" }, {}, FDropdownEnum::Right); break;
 				case BindEnum::ItemSlot: FDropdown("Item slot", &tBind.m_iInfo, { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, {}, FDropdownEnum::Right); break;
 				case BindEnum::Misc: FDropdown("Misc", &tBind.m_iInfo, { "Spectated", "Spectated 1st", "Spectated 3rd", "##Divider", "Zoomed", "Aiming" }, {}, FDropdownEnum::Right); break;
-				case BindEnum::ClassAndKey:
-				{
-					FDropdown("Class", &tBind.m_iExtraInt2, { "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy" }, {}, FDropdownEnum::Right);
-					FKeybind("Key##ClassAndKey", tBind.m_iExtraKey, FKeybindEnum::None, {}, { 0, 30 }, 0);
-					break;
-				}
-				case BindEnum::UnderHP:
-				{
-					FDropdown("Mode", &tBind.m_iInfo, { "Below threshold" }, {}, FDropdownEnum::Right);
-					FSlider("HP threshold", &tBind.m_iExtraInt, nullptr, 1, 300, 1, "%i", FSliderEnum::Left);
-					break;
-				}
-				case BindEnum::PlayerCount:
-				{
-					FDropdown("Mode", &tBind.m_iInfo, { "Equals" }, {}, FDropdownEnum::Right);
-					FSlider("Player count", &tBind.m_iExtraInt, nullptr, 1, 32, 1, "%i", FSliderEnum::Left);
-					break;
-				}
-				case BindEnum::ExactWeapon:
-				{
-					FDropdown("Mode", &tBind.m_iInfo, { "Holding" }, {}, FDropdownEnum::Right);
-					FSlider("Item def index", &tBind.m_iExtraWeaponID, nullptr, 0, 30000, 1, "%i", FSliderEnum::Left);
-					break;
-				}
-				case BindEnum::Charging:
-					FDropdown("Charging", &tBind.m_iInfo, { "Any charge" }, {}, FDropdownEnum::Right);
-					break;
-				case BindEnum::IfOptionOn:
-				{
-					FDropdown("Mode", &tBind.m_iInfo, { "Is enabled" }, {}, FDropdownEnum::Right);
-					InputText("Option name##IfOptionOn", &tBind.m_sOptionName);
-					break;
-				}
-				case BindEnum::Ticks:
-				{
-					FDropdown("Mode", &tBind.m_iInfo, { "Every N ticks" }, {}, FDropdownEnum::Right);
-					FSlider("Tick interval", &tBind.m_iExtraInt, nullptr, 1, 128, 1, "%i", FSliderEnum::Left);
-					break;
-				}
-				case BindEnum::GameMode:
-					FDropdown("Mode", &tBind.m_iInfo, { "Casual", "Private" }, {}, FDropdownEnum::Right);
-					break;
 				}
 			} EndChild();
 
@@ -2775,55 +2733,6 @@ void CMenu::MenuSettings(int iTab)
 								break;
 							}
 							break;
-						case BindEnum::ClassAndKey:
-							sType = "cls+key";
-							switch (_tBind.m_iExtraInt2)
-							{
-							case BindEnum::ClassEnum::Scout: sInfo = "scout"; break;
-							case BindEnum::ClassEnum::Soldier: sInfo = "soldier"; break;
-							case BindEnum::ClassEnum::Pyro: sInfo = "pyro"; break;
-							case BindEnum::ClassEnum::Demoman: sInfo = "demo"; break;
-							case BindEnum::ClassEnum::Heavy: sInfo = "heavy"; break;
-							case BindEnum::ClassEnum::Engineer: sInfo = "engi"; break;
-							case BindEnum::ClassEnum::Medic: sInfo = "medic"; break;
-							case BindEnum::ClassEnum::Sniper: sInfo = "sniper"; break;
-							case BindEnum::ClassEnum::Spy: sInfo = "spy"; break;
-							}
-							if (_tBind.m_iExtraKey)
-								sInfo += std::format("+{}", VK2STR(_tBind.m_iExtraKey));
-							break;
-						case BindEnum::UnderHP:
-							sType = "hp<";
-							sInfo = std::format("{}", _tBind.m_iExtraInt);
-							break;
-						case BindEnum::PlayerCount:
-							sType = "players";
-							sInfo = std::format("={}", _tBind.m_iExtraInt);
-							break;
-						case BindEnum::ExactWeapon:
-							sType = "weapon";
-							sInfo = std::format("#{}", _tBind.m_iExtraWeaponID);
-							break;
-						case BindEnum::Charging:
-							sType = "charging";
-							sInfo = "any";
-							break;
-						case BindEnum::IfOptionOn:
-							sType = "option";
-							sInfo = _tBind.m_sOptionName.empty() ? "?" : _tBind.m_sOptionName;
-							break;
-						case BindEnum::Ticks:
-							sType = "ticks";
-							sInfo = std::format("/{}", _tBind.m_iExtraInt);
-							break;
-						case BindEnum::GameMode:
-							sType = "gamemode";
-							switch (_tBind.m_iInfo)
-							{
-							case BindEnum::GameModeEnum::Casual: sInfo = "casual"; break;
-							case BindEnum::GameModeEnum::Private: sInfo = "private"; break;
-							}
-							break;
 						}
 						if (_tBind.m_bNot && (_tBind.m_iType != BindEnum::Key || _tBind.m_iInfo == BindEnum::KeyEnum::Hold))
 							sType = std::format("not {}", sType);
@@ -2945,7 +2854,7 @@ void CMenu::MenuSettings(int iTab)
 									_tBind.m_sName = sInput;
 							}
 
-							FDropdown("Type", &_tBind.m_iType, { "Key", "Class", "Weapon type", "Item slot", "Misc", "Class + Key", "Under HP", "Player count", "Exact weapon", "Charging", "If option on", "Ticks", "Game mode" }, {}, FDropdownEnum::Left);
+							FDropdown("Type", &_tBind.m_iType, { "Key", "Class", "Weapon type", "Item slot", "Misc" }, {}, FDropdownEnum::Left);
 							switch (_tBind.m_iType)
 							{
 							case BindEnum::Key: FDropdown("Behavior", &_tBind.m_iInfo, { "Hold", "Toggle", "Double click" }, {}, FDropdownEnum::Right); break;
@@ -2953,36 +2862,6 @@ void CMenu::MenuSettings(int iTab)
 							case BindEnum::WeaponType: FDropdown("Weapon type", &_tBind.m_iInfo, { "Hitscan", "Projectile", "Melee", "Throwable" }, {}, FDropdownEnum::Right); break;
 							case BindEnum::ItemSlot: FDropdown("Item slot", &_tBind.m_iInfo, { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, {}, FDropdownEnum::Right); break;
 							case BindEnum::Misc: FDropdown("Misc", &_tBind.m_iInfo, { "Spectated", "Spectated 1st", "Spectated 3rd", "##Divider", "Zoomed", "Aiming" }, {}, FDropdownEnum::Right); break;
-							case BindEnum::ClassAndKey:
-								FDropdown("Class", &_tBind.m_iExtraInt2, { "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy" }, {}, FDropdownEnum::Right);
-								FKeybind("Key##ClassAndKey3", _tBind.m_iExtraKey, FKeybindEnum::None, {}, { 0, 30 }, 0);
-								break;
-							case BindEnum::UnderHP:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Below threshold" }, {}, FDropdownEnum::Right);
-								FSlider("HP threshold", &_tBind.m_iExtraInt, nullptr, 1, 300, 1, "%i", FSliderEnum::Left);
-								break;
-							case BindEnum::PlayerCount:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Equals" }, {}, FDropdownEnum::Right);
-								FSlider("Player count", &_tBind.m_iExtraInt, nullptr, 1, 32, 1, "%i", FSliderEnum::Left);
-								break;
-							case BindEnum::ExactWeapon:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Holding" }, {}, FDropdownEnum::Right);
-								FSlider("Item def index", &_tBind.m_iExtraWeaponID, nullptr, 0, 30000, 1, "%i", FSliderEnum::Left);
-								break;
-							case BindEnum::Charging:
-								FDropdown("Charging", &_tBind.m_iInfo, { "Any charge" }, {}, FDropdownEnum::Right);
-								break;
-							case BindEnum::IfOptionOn:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Is enabled" }, {}, FDropdownEnum::Right);
-								InputText("Option name##IfOptionOn3", &_tBind.m_sOptionName);
-								break;
-							case BindEnum::Ticks:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Every N ticks" }, {}, FDropdownEnum::Right);
-								FSlider("Tick interval", &_tBind.m_iExtraInt, nullptr, 1, 128, 1, "%i", FSliderEnum::Left);
-								break;
-							case BindEnum::GameMode:
-								FDropdown("Mode", &_tBind.m_iInfo, { "Casual", "Private" }, {}, FDropdownEnum::Right);
-								break;
 							}
 							if (_tBind.m_iType == BindEnum::Key)
 								FKeybind("Key", _tBind.m_iKey);
@@ -3231,9 +3110,6 @@ void CMenu::MenuSettings(int iTab)
 				if (FButton("Lock achievements", FButtonEnum::Right | FButtonEnum::SameLine))
 					OpenPopup("LockAchievements");
 
-				if (FButton("Unlock item achievements"))
-					OpenPopup("UnlockItemAchievements");
-
 				if (FBeginPopupModal("UnlockAchievements", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysUseWindowPadding))
 				{
 					FText("Do you really want to unlock all achievements?");
@@ -3255,20 +3131,6 @@ void CMenu::MenuSettings(int iTab)
 					if (FButton("Yes, lock", FButtonEnum::Left))
 					{
 						F::Misc.LockAchievements();
-						CloseCurrentPopup();
-					}
-					if (FButton("No", FButtonEnum::Right | FButtonEnum::SameLine))
-						CloseCurrentPopup();
-
-					EndPopup();
-				}
-				else if (FBeginPopupModal("UnlockItemAchievements", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysUseWindowPadding))
-				{
-					FText("Unlock milestone achievements that grant in-game items?");
-
-					if (FButton("Yes, unlock", FButtonEnum::Left))
-					{
-						F::Misc.UnlockItemAchievements();
 						CloseCurrentPopup();
 					}
 					if (FButton("No", FButtonEnum::Right | FButtonEnum::SameLine))

@@ -984,41 +984,6 @@ struct Color_t
 	{
 		return Brightness(flRed, flGreen, flBlue) < flValue;
 	}
-
-	// Returns the effective color for drawing: rainbow-animated if m_bRainbow is set
-	inline Color_t GetColor() const
-	{
-		if (!m_bRainbow)
-			return *this;
-		return GetRainbow(s_flRainbowTime);
-	}
-
-	// Call once per frame to update the rainbow time cache
-	static inline void UpdateRainbowTime(float flTime)
-	{
-		s_flRainbowTime = flTime;
-	}
-	static inline float GetRainbowTime() { return s_flRainbowTime; }
-
-private:
-	static inline float s_flRainbowTime = 0.f;
-public:
-	float m_flRainbowSpeed = 1.f; // cycles per second
-	float m_flRainbowSaturation = 100.f;
-	float m_flRainbowBrightness = 100.f;
-
-	inline Color_t GetRainbow(float flTime) const
-	{
-		if (!m_bRainbow)
-			return *this;
-		Color_t tOut;
-		tOut.SetHSV(fmodf(flTime * m_flRainbowSpeed * 360.f, 360.f), m_flRainbowSaturation, m_flRainbowBrightness, a);
-		tOut.m_bRainbow = m_bRainbow;
-		tOut.m_flRainbowSpeed = m_flRainbowSpeed;
-		tOut.m_flRainbowSaturation = m_flRainbowSaturation;
-		tOut.m_flRainbowBrightness = m_flRainbowBrightness;
-		return tOut;
-	}
 };
 
 struct Gradient_t
